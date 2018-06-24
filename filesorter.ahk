@@ -8,13 +8,14 @@ files_to_copy := []
 
 Gui Add, Text, x20 y20, Datei-Endung:
 Gui Add, Edit, x150 y20 w120 h21 Limit3 vDatei_endung
-Gui Add, Edit, x150 y50 w120 h21 vName_datei_quelle
 Gui Add, Button, x20 y50 w100 h21 gQuelle_waehlen, Quelle waehlen
-Gui Add, Edit, x150 y80 w120 h21 vName_datei_ziel
+Gui Add, Edit, x150 y50 w120 h21 vName_datei_quelle
 Gui Add, Button, x20 y80 w100 h21 gZiel_waehlen, Ziel waehlen
-Gui Add, Button, x20 y110 w100 h21 gKopieren, Dateien kopieren
+Gui Add, Edit, x150 y80 w120 h21 vName_datei_ziel
+Gui Add, Checkbox, vOverwrite_existing_files x20 y110, Overwrite existing files
+Gui Add, Button, x20 y140 w100 h21 gKopieren, Dateien kopieren
 
-Gui Show, w300 h160, File-Sorter
+Gui Show, w300 h190, File-Sorter
 Return
 
 
@@ -42,6 +43,7 @@ Kopieren:
   GuiControlGet, Datei_endung
   GuiControlGet, Name_datei_quelle
   GuiControlGet, Name_datei_ziel
+  GuiControlGet, Overwrite_existing_files
 
   ;Wir machen hier natürlich nur etwas, wenn die benötigten Variablen auch gefüllt sind.
   If (Datei_endung <> "") AND (Name_datei_ziel <> "") AND (Name_datei_quelle <> "") AND (Name_datei_ziel <> Name_datei_quelle)
@@ -69,7 +71,7 @@ Kopieren:
           Loop % ArrayCount
           {
             datei := files_to_copy[A_Index]
-            FileMove, %Name_datei_quelle%\%datei%, %Name_datei_ziel%
+            FileMove, %Name_datei_quelle%\%datei%, %Name_datei_ziel%, %Overwrite_existing_files%
           }
           MsgBox, kopiert!
           ArrayCount =
