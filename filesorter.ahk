@@ -14,7 +14,7 @@ Gui Add, Edit, x150 y80 w120 h21 vName_datei_ziel
 Gui Add, Checkbox, vOverwrite_existing_files x20 y114, Overwrite existing files
 Gui Add, Button, x160 y110 w100 h21 gKopieren vKopierenButton, Dateien kopieren
 Gui Add, Text, x20 y150, Status:
-Gui Add, Edit, x90 y150 w150 h21 vKopierenStatus
+Gui Add, Edit, x60 y146 w210 h21 vKopierenStatus
 
 Gui Show, w300 h190, File-Sorter
 Return
@@ -60,14 +60,23 @@ Kopieren:
             {
               ArrayCount += 1
               files_to_copy[ArrayCount] :=  A_LoopFileName
+              datei=%Name_datei_quelle%\%A_LoopFileName%
+              FileGetSize, current_size, %datei%, K
+              all_sizes += %current_size%
             }
           }
 
         ;Gibt es überhaupt Dateien?
         if ArrayCount >= 1
         {
+          if all_sizes > 1024
+          {
+            all_sizes := all_sizes/1024
+            all_sizes := Floor(all_sizes)
+          }
+
           GuiControl, Disable, KopierenButton
-          KopierenStatusValue = Kopiere %ArrayCount% Dateien...
+          KopierenStatusValue = Kopiere %ArrayCount% Dateien (%all_sizes% MB)...
           GuiControl,, KopierenStatus, %KopierenStatusValue%
 
           hochlaeufer := 1
@@ -77,7 +86,7 @@ Kopieren:
             FileMove, %Name_datei_quelle%\%datei%, %Name_datei_ziel%, %Overwrite_existing_files%
           }
           GuiControl, Enable, KopierenButton
-          KopierenStatusValue = Es wurden %ArrayCount% Dateien kopiert!
+          KopierenStatusValue = Es wurden %ArrayCount% Dateien (%all_sizes% MB) kopiert!
           GuiControl,, KopierenStatus, %KopierenStatusValue%
           ArrayCount =
           Return
