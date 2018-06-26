@@ -5,14 +5,14 @@ SetWorkingDir %A_ScriptDir%
 StringCaseSense, On
 files_to_copy := []
 
-Gui Add, Text, x20 y20, Datei-Endung:
+Gui Add, Text, x20 y20, File extension:
 Gui Add, Edit, x150 y20 w120 h21 Limit3 vDatei_endung
-Gui Add, Button, x20 y50 w100 h21 gQuelle_waehlen, Quelle waehlen
+Gui Add, Button, x20 y50 w100 h21 gQuelle_waehlen, Source
 Gui Add, Edit, x150 y50 w120 h21 vName_datei_quelle
-Gui Add, Button, x20 y80 w100 h21 gZiel_waehlen, Ziel waehlen
+Gui Add, Button, x20 y80 w100 h21 gZiel_waehlen, Target
 Gui Add, Edit, x150 y80 w120 h21 vName_datei_ziel
 Gui Add, Checkbox, vOverwrite_existing_files x20 y114, Overwrite existing files
-Gui Add, Button, x160 y110 w100 h21 gKopieren vKopierenButton, Dateien kopieren
+Gui Add, Button, x160 y110 w100 h21 gKopieren vKopierenButton, Move files
 Gui Add, Text, x20 y150, Status:
 Gui Add, Edit, x60 y146 w210 h21 vKopierenStatus
 
@@ -76,7 +76,7 @@ Kopieren:
           }
 
           GuiControl, Disable, KopierenButton
-          KopierenStatusValue = Kopiere %ArrayCount% Dateien (%all_sizes% MB)...
+          KopierenStatusValue = Moving %ArrayCount% files (%all_sizes% MB)...
           GuiControl,, KopierenStatus, %KopierenStatusValue%
 
           hochlaeufer := 1
@@ -86,18 +86,18 @@ Kopieren:
             FileMove, %Name_datei_quelle%\%datei%, %Name_datei_ziel%, %Overwrite_existing_files%
           }
           GuiControl, Enable, KopierenButton
-          KopierenStatusValue = Es wurden %ArrayCount% Dateien (%all_sizes% MB) kopiert!
+          KopierenStatusValue = Moved %ArrayCount% files (%all_sizes% MB)!
           GuiControl,, KopierenStatus, %KopierenStatusValue%
           ArrayCount =
           Return
 
         } else {
-          MsgBox, Es wurden keine passenden Dateien gefunden!
+          MsgBox, No matching files found!!
         }
       }
   }
   } else {
-    MsgBox, 32, File Sorter, Unvollstaendige Angaben!
+    MsgBox, 32, File Sorter, Insufficient information!
     Return
   }
 }
