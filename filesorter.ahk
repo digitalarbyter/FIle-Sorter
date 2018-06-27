@@ -69,14 +69,16 @@ Kopieren:
         ;Gibt es überhaupt Dateien?
         if ArrayCount >= 1
         {
+          all_sizes_type = KB
           if all_sizes > 1024
           {
             all_sizes := all_sizes/1024
             all_sizes := Floor(all_sizes)
+            all_sizes_type = MB
           }
 
           GuiControl, Disable, KopierenButton
-          KopierenStatusValue = Moving %ArrayCount% files (%all_sizes% MB)...
+          KopierenStatusValue = Moving %ArrayCount% files (%all_sizes% %all_sizes_type%)...
           GuiControl,, KopierenStatus, %KopierenStatusValue%
 
           hochlaeufer := 1
@@ -86,7 +88,7 @@ Kopieren:
             FileMove, %Name_datei_quelle%\%datei%, %Name_datei_ziel%, %Overwrite_existing_files%
           }
           GuiControl, Enable, KopierenButton
-          KopierenStatusValue = Moved %ArrayCount% files (%all_sizes% MB)!
+          KopierenStatusValue = Moved %ArrayCount% files (%all_sizes% %all_sizes_type%)!
           GuiControl,, KopierenStatus, %KopierenStatusValue%
           ArrayCount =
           Return
