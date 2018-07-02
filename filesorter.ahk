@@ -15,8 +15,9 @@ Gui Add, Checkbox, vOverwrite_existing_files x20 y114, Overwrite existing files
 Gui Add, Button, x160 y110 w100 h21 gKopieren vKopierenButton, Move files
 Gui Add, Text, x20 y150, Status:
 Gui Add, Edit, x60 y146 w210 h21 vKopierenStatus
+Gui, Add, Progress, x20 y190 w260 h20 cBlue vMyProgress
 
-Gui Show, w300 h190, File-Sorter
+Gui Show, w300 h230, File-Sorter
 Return
 
 
@@ -69,6 +70,10 @@ Kopieren:
         ;Gibt es überhaupt Dateien?
         if ArrayCount >= 1
         {
+          ;Fake ProgressBar-Set um bei mehrfacher Ausführung einen Neustart der ProgressBar zu haben
+          GuiControl,, MyProgress, 10
+
+          ;Berechnung angezeigte Dateigröße
           all_sizes_type = KB
           if all_sizes > 1024
           {
@@ -76,6 +81,11 @@ Kopieren:
             all_sizes := Floor(all_sizes)
             all_sizes_type = MB
           }
+
+          ;Berechnung ProgressBar-Loop-Dateigröße
+          ProgressBarJump := Floor(260/ArrayCount)
+
+
 
           GuiControl, Disable, KopierenButton
           KopierenStatusValue = Moving %ArrayCount% files (%all_sizes% %all_sizes_type%)...
@@ -86,6 +96,7 @@ Kopieren:
           {
             datei := files_to_copy[A_Index]
             FileMove, %Name_datei_quelle%\%datei%, %Name_datei_ziel%, %Overwrite_existing_files%
+            GuiControl,, MyProgress, +%ProgressBarJump%
           }
           GuiControl, Enable, KopierenButton
           KopierenStatusValue = Moved %ArrayCount% files (%all_sizes% %all_sizes_type%)!
