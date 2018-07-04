@@ -11,13 +11,15 @@ Gui Add, Button, x20 y50 w100 h21 gQuelle_waehlen, Source
 Gui Add, Edit, x150 y50 w120 h21 vName_datei_quelle
 Gui Add, Button, x20 y80 w100 h21 gZiel_waehlen, Target
 Gui Add, Edit, x150 y80 w120 h21 vName_datei_ziel
-Gui Add, Checkbox, vOverwrite_existing_files x20 y114, Overwrite existing files
-Gui Add, Button, x160 y110 w100 h21 gKopieren vKopierenButton, Move files
-Gui Add, Text, x20 y150, Status:
-Gui Add, Edit, x60 y146 w210 h21 vKopierenStatus
-Gui, Add, Progress, x20 y190 w260 h20 cBlue vMyProgress
+Gui Add, Radio, x20 y110 vMovefiles Checked, Move files
+Gui Add, Radio, x150 y110 vCopyfiles, Copy files
+Gui Add, Checkbox, vOverwrite_existing_files x20 y144, Overwrite existing files
+Gui Add, Button, x160 y140 w100 h21 gKopieren vKopierenButton, Move files
+Gui Add, Text, x20 y180, Status:
+Gui Add, Edit, x60 y176 w210 h21 vKopierenStatus
+Gui, Add, Progress, x20 y220 w260 h20 cBlue vMyProgress
 
-Gui Show, w300 h230, File-Sorter
+Gui Show, w300 h260, File-Sorter
 Return
 
 
@@ -45,6 +47,9 @@ Kopieren:
   GuiControlGet, Name_datei_quelle
   GuiControlGet, Name_datei_ziel
   GuiControlGet, Overwrite_existing_files
+  GuiControlGet, Copyfiles
+  GuiControlGet, Movefiles
+
 
   ;Wir machen hier natürlich nur etwas, wenn die benötigten Variablen auch gefüllt sind.
   If (Datei_endung <> "") AND (Name_datei_ziel <> "") AND (Name_datei_quelle <> "") AND (Name_datei_ziel <> Name_datei_quelle)
@@ -85,8 +90,6 @@ Kopieren:
           ;Berechnung ProgressBar-Loop-Dateigröße
           ProgressBarJump := Floor(260/ArrayCount)
 
-
-
           GuiControl, Disable, KopierenButton
           KopierenStatusValue = Moving %ArrayCount% files (%all_sizes% %all_sizes_type%)...
           GuiControl,, KopierenStatus, %KopierenStatusValue%
@@ -95,7 +98,12 @@ Kopieren:
           Loop % ArrayCount
           {
             datei := files_to_copy[A_Index]
-            FileMove, %Name_datei_quelle%\%datei%, %Name_datei_ziel%, %Overwrite_existing_files%
+            if Movefiles = 1
+            {
+              FileMove, %Name_datei_quelle%\%datei%, %Name_datei_ziel%, %Overwrite_existing_files%
+            } else {
+              FileCopy, %Name_datei_quelle%\%datei%, %Name_datei_ziel%, %Overwrite_existing_files%
+            }
             GuiControl,, MyProgress, +%ProgressBarJump%
           }
           GuiControl, Enable, KopierenButton
