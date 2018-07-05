@@ -14,7 +14,7 @@ Gui Add, Edit, x150 y80 w120 h21 vName_datei_ziel
 Gui Add, Radio, x20 y110 vMovefiles Checked, Move files
 Gui Add, Radio, x150 y110 vCopyfiles, Copy files
 Gui Add, Checkbox, vOverwrite_existing_files x20 y144, Overwrite existing files
-Gui Add, Button, x160 y140 w100 h21 gKopieren vKopierenButton, Move files
+Gui Add, Button, x160 y140 w100 h21 gKopieren vKopierenButton, Start
 Gui Add, Text, x20 y180, Status:
 Gui Add, Edit, x60 y176 w210 h21 vKopierenStatus
 Gui, Add, Progress, x20 y220 w260 h20 cBlue vMyProgress
@@ -90,8 +90,17 @@ Kopieren:
           ;Berechnung ProgressBar-Loop-Dateigröße
           ProgressBarJump := Floor(260/ArrayCount)
 
+          if Movefiles = 1
+          {
+            doing = Moving
+            done = Moved
+          } else {
+            doing = Copying
+            done = Copied
+          }
+
           GuiControl, Disable, KopierenButton
-          KopierenStatusValue = Moving %ArrayCount% files (%all_sizes% %all_sizes_type%)...
+          KopierenStatusValue = %doing% %ArrayCount% files (%all_sizes% %all_sizes_type%)...
           GuiControl,, KopierenStatus, %KopierenStatusValue%
 
           hochlaeufer := 1
@@ -107,7 +116,7 @@ Kopieren:
             GuiControl,, MyProgress, +%ProgressBarJump%
           }
           GuiControl, Enable, KopierenButton
-          KopierenStatusValue = Moved %ArrayCount% files (%all_sizes% %all_sizes_type%)!
+          KopierenStatusValue = %done% %ArrayCount% files (%all_sizes% %all_sizes_type%)!
           GuiControl,, KopierenStatus, %KopierenStatusValue%
           ArrayCount =
           Return
