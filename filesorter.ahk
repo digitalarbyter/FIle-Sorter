@@ -110,15 +110,23 @@ Kopieren:
             if Movefiles = 1
             {
               FileMove, %Name_datei_quelle%\%datei%, %Name_datei_ziel%, %Overwrite_existing_files%
+              ErrorCount += ErrorLevel
             } else {
               FileCopy, %Name_datei_quelle%\%datei%, %Name_datei_ziel%, %Overwrite_existing_files%
+              ErrorCount += ErrorLevel
             }
             GuiControl,, MyProgress, +%ProgressBarJump%
           }
           GuiControl, Enable, KopierenButton
-          KopierenStatusValue = %done% %ArrayCount% files (%all_sizes% %all_sizes_type%)!
+          If ErrorCount <> 0
+          {
+            error_msg = %ErrorCount% with problems!
+          }
+          KopierenStatusValue = %done% %ArrayCount% files (%all_sizes% %all_sizes_type%)! %error_msg%
           GuiControl,, KopierenStatus, %KopierenStatusValue%
           ArrayCount =
+          error_msg =
+          ErrorCount =
           Return
 
         } else {
