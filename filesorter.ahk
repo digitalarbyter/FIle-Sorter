@@ -2,7 +2,7 @@
 #SingleInstance Force
 SetWorkingDir %A_ScriptDir%
 ;Activate case-sensetive string-comparisson
-StringCaseSense, On
+StringCaseSense, Off
 files_to_copy := []
 
 Gui Add, Text, x20 y20, File extension:
@@ -118,6 +118,8 @@ Kopieren:
             GuiControl,, MyProgress, +%ProgressBarJump%
           }
           GuiControl, Enable, KopierenButton
+
+          ;No ErrorLevel when overwriting is enabled
           If ErrorCount <> 0
           {
             error_msg = %ErrorCount% with problems!
