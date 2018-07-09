@@ -87,6 +87,12 @@ Kopieren:
             all_sizes_type = MB
           }
 
+          if all_sizes > 1024
+          {
+            all_sizes := all_sizes/1024
+            all_sizes := Round(all_sizes,2)
+            all_sizes_type = GB
+          }
           ;Berechnung ProgressBar-Loop-Dateigröße
           ProgressBarJump := Floor(260/ArrayCount)
 
