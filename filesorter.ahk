@@ -76,7 +76,7 @@ Kopieren:
         if ArrayCount >= 1
         {
           ;Fake ProgressBar-Set um bei mehrfacher Ausführung einen Neustart der ProgressBar zu haben
-          GuiControl,, MyProgress, 10
+          GuiControl,, MyProgress, 1
 
           ;Berechnung angezeigte Dateigröße
           all_sizes_type = KB
