@@ -51,14 +51,14 @@ Kopieren:
   GuiControlGet, Movefiles
 
 
-  ;Wir machen hier natürlich nur etwas, wenn die benötigten Variablen auch gefüllt sind.
+  ;Checking if variables are set, otherwise there's nothing to do
   If (Datei_endung <> "") AND (Name_datei_ziel <> "") AND (Name_datei_quelle <> "") AND (Name_datei_ziel <> Name_datei_quelle)
   {
     IfExist, %Name_datei_quelle%
     {
       IfExist, %Name_datei_ziel%
       {
-        ;Passende Dateien suchen!
+        ;List matching files
         Loop %Name_datei_quelle%\*.*
         	{
             StringRight, current_file, A_LoopFileName, 3
@@ -72,13 +72,13 @@ Kopieren:
             }
           }
 
-        ;Gibt es überhaupt Dateien?
+        ;Are there matching files?
         if ArrayCount >= 1
         {
-          ;Fake ProgressBar-Set um bei mehrfacher Ausführung einen Neustart der ProgressBar zu haben
+          ;Fake progress-activity to enable multiple runs
           GuiControl,, MyProgress, 1
 
-          ;Berechnung angezeigte Dateigröße
+          ;calculate displayed file sizes
           all_sizes_type = KB
           if all_sizes > 1024
           {
@@ -93,7 +93,7 @@ Kopieren:
             all_sizes := Round(all_sizes,2)
             all_sizes_type = GB
           }
-          ;Berechnung ProgressBar-Loop-Dateigröße
+          ;calculating single progressbar-jump
           ProgressBarJump := Floor(260/ArrayCount)
 
           if Movefiles = 1
