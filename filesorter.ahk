@@ -15,13 +15,14 @@ Gui Add, Radio, x20 y110 vMovefiles Checked, Move files
 Gui Add, Radio, x150 y110 vCopyfiles, Copy files
 Gui Add, Checkbox, vOverwrite_existing_files x20 y144, Overwrite existing files
 Gui Add, Button, x160 y140 w100 h21 gKopieren vKopierenButton, Start
-Gui Add, Text, x20 y180, Status:
-Gui Add, Edit, x60 y176 w210 h21 vKopierenStatus
-Gui, Add, Progress, x20 y220 w260 h20 cBlue vMyProgress
+Gui, Add, GroupBox, x20 y170 w260 h200, Status
+Gui Add, Text, x22 y190, Status:
+Gui Add, Edit, x60 y186 w210 h21 vKopierenStatus
+Gui, Add, Progress, x22 y220 w256 h20 cBlue vMyProgress
+Gui, Add, ListView, x22 y250 r5 w256 vFileList, File|
 
-Gui Show, w300 h260, File-Sorter
+Gui Show, w300 h380, File-Sorter
 Return
-
 
 GuiEscape:
 GuiClose:
@@ -49,7 +50,6 @@ Kopieren:
   GuiControlGet, Overwrite_existing_files
   GuiControlGet, Copyfiles
   GuiControlGet, Movefiles
-
 
   ;Checking if variables are set, otherwise there's nothing to do
   If (Datei_endung <> "") AND (Name_datei_ziel <> "") AND (Name_datei_quelle <> "") AND (Name_datei_ziel <> Name_datei_quelle)
@@ -109,10 +109,12 @@ Kopieren:
           KopierenStatusValue = %doing% %ArrayCount% files (%all_sizes% %all_sizes_type%)...
           GuiControl,, KopierenStatus, %KopierenStatusValue%
 
-          hochlaeufer := 1
+          hochlaeufer := 0
           Loop % ArrayCount
           {
             datei := files_to_copy[A_Index]
+            LV_Add("", datei)
+            LV_Modify(hochlaeufer, "Vis")
             if Movefiles = 1
             {
               FileMove, %Name_datei_quelle%\%datei%, %Name_datei_ziel%, %Overwrite_existing_files%
@@ -122,6 +124,7 @@ Kopieren:
               ErrorCount += ErrorLevel
             }
             GuiControl,, MyProgress, +%ProgressBarJump%
+            hochlaeufer += 1
           }
           GuiControl, Enable, KopierenButton
 
