@@ -13,15 +13,17 @@ Gui Add, Button, x20 y80 w100 h21 gZiel_waehlen, Target
 Gui Add, Edit, x150 y80 w120 h21 vName_datei_ziel
 Gui Add, Radio, x20 y110 vMovefiles Checked, Move files
 Gui Add, Radio, x150 y110 vCopyfiles, Copy files
-Gui Add, Checkbox, vOverwrite_existing_files x20 y144, Overwrite existing files
-Gui Add, Button, x160 y140 w100 h21 gKopieren vKopierenButton, Start
-Gui, Add, GroupBox, x20 y170 w260 h200, Status
-Gui Add, Text, x22 y190, Status:
-Gui Add, Edit, x60 y186 w210 h21 vKopierenStatus
-Gui, Add, Progress, x22 y220 w256 h20 cBlue vMyProgress
-Gui, Add, ListView, x22 y250 r5 w256 vFileList, File|
+Gui Add, Checkbox, vDoFileTimeMatch x20 y144, Only files created before
+Gui Add, Edit, x160 y140 w74 h21 vFileTimeMatch, YYYYMMDD
+Gui Add, Checkbox, vOverwrite_existing_files x20 y174, Overwrite existing files
+Gui Add, Button, x160 y170 w100 h21 gKopieren vKopierenButton, Start
+Gui, Add, GroupBox, x20 y200 w260 h200, Status
+Gui Add, Text, x22 y220, Status:
+Gui Add, Edit, x60 y216 w210 h21 vKopierenStatus
+Gui, Add, Progress, x22 y250 w256 h20 cBlue vMyProgress
+Gui, Add, ListView, x22 y280 r6 w256 vFileList, File|
 
-Gui Show, w300 h380, File-Sorter
+Gui Show, w300 h410, File-Sorter
 Return
 
 GuiEscape:
@@ -50,6 +52,8 @@ Kopieren:
   GuiControlGet, Overwrite_existing_files
   GuiControlGet, Copyfiles
   GuiControlGet, Movefiles
+  GuiControlGet, DoFileTimeMatch
+  GuiControlGet, FileTimeMatch
 
   ;Checking if variables are set, otherwise there's nothing to do
   If (Datei_endung <> "") AND (Name_datei_ziel <> "") AND (Name_datei_quelle <> "") AND (Name_datei_ziel <> Name_datei_quelle)
@@ -58,17 +62,29 @@ Kopieren:
     {
       IfExist, %Name_datei_ziel%
       {
+        ;fake FileTimeMatch
+        if DoFileTimeMatch = 0
+        {
+          filetimetocompare = 99991231235959
+        } else {
+          filetimetocompare = %FileTimeMatch%235959
+        }
+        
         ;List matching files
         Loop %Name_datei_quelle%\*.*
         	{
             StringRight, current_file, A_LoopFileName, 3
             if current_file = %Datei_endung%
             {
-              ArrayCount += 1
-              files_to_copy[ArrayCount] :=  A_LoopFileName
               datei=%Name_datei_quelle%\%A_LoopFileName%
-              FileGetSize, current_size, %datei%, K
-              all_sizes += %current_size%
+              FileGetTime, filetime, %datei%, C
+              if filetime < %filetimetocompare%
+              {
+                ArrayCount += 1
+                files_to_copy[ArrayCount] :=  A_LoopFileName
+                FileGetSize, current_size, %datei%, K
+                all_sizes += %current_size%
+              }
             }
           }
 
