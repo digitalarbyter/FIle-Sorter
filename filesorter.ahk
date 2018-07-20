@@ -13,8 +13,9 @@ Gui Add, Button, x20 y80 w100 h21 gZiel_waehlen, Target
 Gui Add, Edit, x150 y80 w120 h21 vName_datei_ziel
 Gui Add, Radio, x20 y110 vMovefiles Checked, Move files
 Gui Add, Radio, x150 y110 vCopyfiles, Copy files
-Gui Add, Checkbox, vDoFileTimeMatch x20 y144, Only files created before
-Gui Add, Edit, x160 y140 w74 h21 vFileTimeMatch, YYYYMMDD
+Gui Add, Checkbox, vDoFileTimeMatch x20 y144, Only files created
+Gui Add, DropDownList, x120 y142 w60 vDoFileTimeMatchViewPoint Choose1, before|after
+Gui Add, Edit, x184 y140 w74 h21 vFileTimeMatch, YYYYMMDD
 Gui Add, Checkbox, vOverwrite_existing_files x20 y174, Overwrite existing files
 Gui Add, Button, x160 y170 w100 h21 gKopieren vKopierenButton, Start
 Gui, Add, GroupBox, x20 y200 w260 h200, Status
@@ -54,6 +55,7 @@ Kopieren:
   GuiControlGet, Movefiles
   GuiControlGet, DoFileTimeMatch
   GuiControlGet, FileTimeMatch
+  GuiControlGet, DoFileTimeMatchViewPoint
 
   ;Checking if variables are set, otherwise there's nothing to do
   If (Datei_endung <> "") AND (Name_datei_ziel <> "") AND (Name_datei_quelle <> "") AND (Name_datei_ziel <> Name_datei_quelle)
@@ -69,16 +71,29 @@ Kopieren:
         } else {
           filetimetocompare = %FileTimeMatch%235959
         }
-        
+
         ;List matching files
         Loop %Name_datei_quelle%\*.*
         	{
             StringRight, current_file, A_LoopFileName, 3
             if current_file = %Datei_endung%
             {
+              copyormove=
               datei=%Name_datei_quelle%\%A_LoopFileName%
               FileGetTime, filetime, %datei%, C
-              if filetime < %filetimetocompare%
+              if DoFileTimeMatchViewPoint = before
+              {
+                if filetime < %filetimetocompare%
+                {
+                  copyormove=1
+                }
+              } else {
+                if filetime > %filetimetocompare%
+                {
+                  copyormove=1
+                }
+              }
+              if copyormove = 1
               {
                 ArrayCount += 1
                 files_to_copy[ArrayCount] :=  A_LoopFileName
